@@ -6,6 +6,10 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.inputRef = React.createRef();
+
+    //
+    this.getNameFromLocalStorage = this.getNameFromLocalStorage.bind(this);
+    this.onNameChange = this.onNameChange.bind(this);
   }
 
 
@@ -13,12 +17,20 @@ class Header extends Component {
     this.getNameFromLocalStorage();
   }
 
-  getNameFromLocalStorage = () => {
+  // getNameFromLocalStorage = () => {
+  //   const userName = this.props.getUserNameFromLocalStorage();
+  //   this.inputRef.current.value = userName;
+  // }
+  getNameFromLocalStorage() {
     const userName = this.props.getUserNameFromLocalStorage();
     this.inputRef.current.value = userName;
   }
 
-  onNameChange = () => {
+
+  // onNameChange = () => {
+  //   localStorage.setItem('userName', this.inputRef.current.value);
+  // }
+  onNameChange() {
     localStorage.setItem('userName', this.inputRef.current.value);
   }
 

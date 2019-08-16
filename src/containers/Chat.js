@@ -36,7 +36,7 @@ class Chat extends React.Component {
     const startSocket = () => {
       this.socket = new WebSocket('ws://st-chat.shas.tel');
       this.props.onChatOnline();
-      global.SSS = this.socket;
+      // global.SSS = this.socket;
 
       this.socket.onmessage = (event) => {
         const message = event.data;
@@ -55,71 +55,79 @@ class Chat extends React.Component {
     this.scrollToBottom();
   }
 
+
+  componentDidUpdate() {
+    this.scrollToBottom();
+  }
+
+  // getUserNameFromLocalStorage = () => localStorage.getItem('userName');
+  getUserNameFromLocalStorage() {
+    return localStorage.getItem('userName');
+  }
+
+  // scrollToBottom = () => {
+  //   this.messagesEnd.scrollIntoView();
+  // }
+  scrollToBottom() {
+    this.messagesEnd.scrollIntoView();
+  }
+
+
   sendMessageToServer() {
     const mes = {message: this.inputRef.current.value, from: this.getUserNameFromLocalStorage()};
     this.socket.send(JSON.stringify(mes));
   }
 
-    getUserNameFromLocalStorage = () => localStorage.getItem('userName');
+  render() {
+    return (
+      <>
+        <div className={styles.fullscreen}>
+          <Header
+            className={styles.headerClass}
+            isOnline={this.props.chat.isChatOnline}
+            getUserNameFromLocalStorage={this.getUserNameFromLocalStorage}
+            userNameRef={this.userNameRef}
+          />
 
-    scrollToBottom = () => {
-      this.messagesEnd.scrollIntoView();
-    }
-
-    componentDidUpdate() {
-      this.scrollToBottom();
-    }
-
-    render() {
-      return (
-        <>
-          <div className={styles.fullscreen}>
-            <Header
-              className={styles.headerClass}
-              isOnline={this.props.chat.isChatOnline}
-              getUserNameFromLocalStorage={this.getUserNameFromLocalStorage}
-              userNameRef={this.userNameRef}
-            />
-
-            <div className={styles.wrapmessages}>
-              <div className={styles.messages} id="messages">
-                <div className={styles.headerMessages}>
-                  {this.props.chat.messages.map((el) => {
-                    const timeFormat = new Date(el.time).toTimeString().replace(/ .*/, '');
-                    return (
-                      <div className={styles.messageContainer}>
-                        <div className={styles.messageFirstLine}>
-                          <div className={styles.messageFrom}>{el.from}</div>
-                          <div className={styles.messageTime}>{timeFormat}</div>
-                        </div>
-                        <div className={styles.messageSecondLine}>{el.message}</div>
+          <div className={styles.wrapmessages}>
+            <div className={styles.messages} id="messages">
+              <div className={styles.headerMessages}>
+                {this.props.chat.messages.map((el) => {
+                  const timeFormat = new Date(el.time).toTimeString().replace(/ .*/, '');
+                  return (
+                    <div className={styles.messageContainer}>
+                      <div className={styles.messageFirstLine}>
+                        <div className={styles.messageFrom}>{el.from}</div>
+                        <div className={styles.messageTime}>{timeFormat}</div>
                       </div>
-                    );
-                  })}
+                      <div className={styles.messageSecondLine}>{el.message}</div>
+                    </div>
+                  );
+                })}
 
-                  <div
-                    style={{ float: 'left', clear: 'both' }}
-                    ref={(el) => { this.messagesEnd = el; }}
-                  />
+                <div
+                  style={{ float: 'left', clear: 'both' }}
+                  ref={(el) => { this.messagesEnd = el; }}
+                />
 
-                </div>
               </div>
-              <input
-                className={styles.messageBottom}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    this.sendMessageToServer();
-                    this.inputRef.current.value = '';
-                  }
-                }}
-                type="text"
-                ref={this.inputRef}
-              />
             </div>
+            <input
+              className={styles.messageBottom}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  this.sendMessageToServer();
+                  this.inputRef.current.value = '';
+                }
+              }}
+              type="text"
+              ref={this.inputRef}
+            />
           </div>
-        </>
-      );
-    }
+        </div>
+      </>
+    );
+  }
 }
 
 function mapStateToProps(state) {
